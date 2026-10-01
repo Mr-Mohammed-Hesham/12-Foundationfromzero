@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شرح أساسيات الرياضيات - الصف الثاني عشر</title>
+    <title>شرح أساسيات الرياضيات - الصف الثاني عشر | إعداد مستر محمد هشام</title>
+    
+    <!-- خطوط عربية احترافية من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <!-- مكتبة MathJax لعرض المعادلات الرياضية -->
     <script>
@@ -11,10 +16,13 @@
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            options: {
+                enableMenu: false
             }
         };
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
     
     <!-- مكتبة html2pdf لتصدير الملف إلى PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -26,12 +34,31 @@
             box-sizing: border-box;
         }
         
+        /* استخدام خط Cairo العربي الاحترافي */
         body {
-            font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+            font-family: 'Cairo', 'Tajawal', 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             line-height: 1.8;
             padding: 20px;
+            direction: rtl;
+            text-align: right;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* ضمان عرض النص العربي بشكل صحيح */
+        p, h1, h2, h3, h4, h5, h6, li, td, th, span, div {
+            unicode-bidi: plaintext;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        /* المعادلات الرياضية تبقى من اليسار لليمين */
+        .MathJax, .formula-box, .formula-box * {
+            direction: ltr !important;
+            text-align: center !important;
+            unicode-bidi: embed;
         }
         
         .container {
@@ -56,11 +83,13 @@
             font-size: 2.5em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 900;
         }
         
         .header p {
             font-size: 1.2em;
-            opacity: 0.9;
+            opacity: 0.95;
+            font-weight: 400;
         }
         
         /* زر تصدير PDF */
@@ -81,6 +110,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-family: 'Cairo', sans-serif;
         }
         
         .export-btn:hover {
@@ -123,6 +153,7 @@
             text-decoration: none;
             transition: all 0.3s;
             font-size: 0.95em;
+            font-weight: 600;
         }
         
         .nav a:hover {
@@ -142,6 +173,7 @@
             background: #f8f9fa;
             border-radius: 15px;
             border-right: 5px solid #2a5298;
+            page-break-inside: avoid;
         }
         
         .section h2 {
@@ -150,18 +182,28 @@
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px dashed #2a5298;
+            font-weight: 900;
         }
         
         .section h3 {
             color: #2a5298;
             font-size: 1.5em;
             margin: 20px 0 15px;
+            font-weight: 700;
+        }
+        
+        .section h4 {
+            color: #1976d2;
+            font-size: 1.2em;
+            margin: 15px 0 10px;
+            font-weight: 700;
         }
         
         .section p {
             margin-bottom: 15px;
             font-size: 1.1em;
             text-align: justify;
+            line-height: 2;
         }
         
         /* صناديق المعادلات */
@@ -174,6 +216,7 @@
             text-align: center;
             font-size: 1.2em;
             box-shadow: 0 4px 10px rgba(102, 126, 234, 0.1);
+            direction: ltr !important;
         }
         
         .formula-box.highlight {
@@ -197,12 +240,14 @@
             color: white;
             padding: 15px;
             font-size: 1.1em;
+            font-weight: 700;
         }
         
         td {
             padding: 12px 15px;
             border: 1px solid #e0e0e0;
             text-align: center;
+            font-size: 1.05em;
         }
         
         tr:nth-child(even) {
@@ -273,6 +318,7 @@
         li {
             margin-bottom: 10px;
             font-size: 1.05em;
+            line-height: 1.8;
         }
         
         /* الرسومات SVG */
@@ -289,13 +335,97 @@
             height: auto;
         }
         
-        /* الفوتر */
+        /* الفوتر الجديد - احترافي */
         .footer {
-            background: #1e3c72;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            text-align: center;
-            padding: 25px;
+            padding: 40px 30px;
             margin-top: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f39c12, #e74c3c, #9b59b6, #3498db, #27ae60);
+        }
+        
+        .footer-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .footer-title {
+            font-size: 1.8em;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .footer-teacher {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 15px 30px;
+            border-radius: 50px;
+            margin: 15px 0;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer-teacher-label {
+            font-size: 0.95em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            font-weight: 400;
+        }
+        
+        .footer-teacher-name {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            font-size: 0.95em;
+        }
+        
+        .footer-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-info-item svg {
+            width: 18px;
+            height: 18px;
+            fill: #ffd700;
+        }
+        
+        .footer-copyright {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.9em;
+            opacity: 0.85;
+        }
+        
+        .footer-quote {
+            font-style: italic;
+            margin: 20px 0;
+            font-size: 1.05em;
+            opacity: 0.95;
         }
         
         /* مؤشر التحميل */
@@ -306,12 +436,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.85);
             z-index: 9999;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             color: white;
+            font-family: 'Cairo', sans-serif;
         }
         
         .loading-overlay.active {
@@ -319,10 +450,10 @@
         }
         
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
+            width: 70px;
+            height: 70px;
+            border: 6px solid rgba(255,255,255,0.3);
+            border-top-color: #ffd700;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -332,11 +463,18 @@
         }
         
         .loading-text {
-            margin-top: 20px;
-            font-size: 1.3em;
+            margin-top: 25px;
+            font-size: 1.4em;
+            font-weight: 600;
         }
         
-        /* أنماط الطباعة */
+        .loading-subtext {
+            margin-top: 10px;
+            font-size: 1em;
+            opacity: 0.8;
+        }
+        
+        /* أنماط الطباعة والتصدير */
         @media print {
             body {
                 background: white;
@@ -366,6 +504,9 @@
                 margin: 10px auto;
                 display: flex;
             }
+            .footer-title { font-size: 1.4em; }
+            .footer-teacher-name { font-size: 1.2em; }
+            .footer-info { gap: 15px; }
         }
     </style>
 </head>
@@ -374,6 +515,7 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
         <div class="loading-text">جاري إنشاء ملف PDF...</div>
+        <div class="loading-subtext">يرجى الانتظار حتى اكتمال التصدير</div>
     </div>
     
     <div class="container" id="content">
@@ -383,7 +525,7 @@
                 <svg viewBox="0 0 24 24">
                     <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                 </svg>
-                تصدير PDF
+                <span id="exportBtnText">تصدير PDF</span>
             </button>
             <h1>📐 أساسيات الرياضيات</h1>
             <p>الصف الثاني عشر - شرح شامل ومبسط</p>
@@ -404,7 +546,7 @@
         <!-- المحتوى -->
         <div class="content">
             
-            <!-- القسم الجديد: التعابير الجبرية -->
+            <!-- القسم: التعابير الجبرية -->
             <div class="section" id="algebra">
                 <h2>🔤 التعابير الجبرية والعمليات عليها</h2>
                 <p>التعبير الجبري هو مجموعة من الأعداد والمتغيرات (الحروف) مرتبطة بعمليات الحساب (+, -, ×, ÷). وهو الأساس الذي تُبنى عليه كل فروع الرياضيات.</p>
@@ -922,65 +1064,172 @@
             
         </div>
         
-        <!-- الفوتر -->
+        <!-- الفوتر الاحترافي -->
         <div class="footer">
-            <p>📚 شرح أساسيات الرياضيات - الصف الثاني عشر</p>
-            <p>تم إعداد هذا الشرح لمساعدة الطلاب على فهم الأساسيات الرياضية</p>
-            <p style="margin-top: 10px; opacity: 0.8;">© 2026 - جميع الحقوق محفوظة</p>
+            <div class="footer-content">
+                <div class="footer-title">📚 تم إعداد هذا الشرح بواسطة</div>
+                
+                <div class="footer-teacher">
+                    <div class="footer-teacher-label">تحت إشراف</div>
+                    <div class="footer-teacher-name">⭐ مستر / محمد هشام ⭐</div>
+                </div>
+                
+                <div class="footer-quote">
+                    "الرياضيات هي لغة الكون، ومن يتقنها يفتح أمامه أبواب العلم والمعرفة"
+                </div>
+                
+                <div class="footer-info">
+                    <div class="footer-info-item">
+                        <svg viewBox="0 0 24 24"><path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"/></svg>
+                        <span>الصف الثاني عشر</span>
+                    </div>
+                    <div class="footer-info-item">
+                        <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/></svg>
+                        <span>رياضيات - أساسي</span>
+                    </div>
+                    <div class="footer-info-item">
+                        <svg viewBox="0 0 24 24"><path d="M19,19H5V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M13.96,12.29L11.21,14.07L10.34,12.93L8.79,14.07L10.21,16.05L12.79,14.38L13.96,12.29Z"/></svg>
+                        <span>عام دراسي 2026</span>
+                    </div>
+                </div>
+                
+                <div class="footer-copyright">
+                    © 2026 - جميع الحقوق محفوظة | يُمنع النسخ أو النشر دون إذن خطي من المُعد
+                </div>
+            </div>
         </div>
     </div>
     
-    <!-- JavaScript لتصدير PDF -->
+    <!-- JavaScript لتصدير PDF مع الحفاظ على اللغة العربية -->
     <script>
-        function exportToPDF() {
+        // دالة انتظار تحميل الخطوط
+        function waitForFonts() {
+            return document.fonts.ready.then(() => {
+                return new Promise(resolve => setTimeout(resolve, 500));
+            });
+        }
+        
+        // دالة تصدير PDF محسّنة للغة العربية
+        async function exportToPDF() {
             const element = document.getElementById('content');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const exportBtn = document.querySelector('.export-btn');
+            const exportBtnText = document.getElementById('exportBtnText');
             
-            // إظهار مؤشر التحميل وتعطيل الزر
+            // إظهار مؤشر التحميل
             loadingOverlay.classList.add('active');
             exportBtn.disabled = true;
-            exportBtn.innerHTML = '<span>جاري التصدير...</span>';
+            exportBtnText.textContent = 'جاري التصدير...';
             
-            // إعدادات html2pdf
-            const opt = {
-                margin: [10, 10, 10, 10],
-                filename: 'Math_Grade12_Explanation.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true,
-                    letterRendering: true,
-                    logging: false
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait' 
-                },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-            
-            // انتظار تحميل MathJax قبل التصدير
-            MathJax.typesetPromise().then(() => {
-                html2pdf().set(opt).from(element).save().then(() => {
-                    // إخفاء مؤشر التحميل وإعادة تفعيل الزر
-                    loadingOverlay.classList.remove('active');
-                    exportBtn.disabled = false;
-                    exportBtn.innerHTML = `
-                        <svg viewBox="0 0 24 24">
-                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                        </svg>
-                        تصدير PDF
-                    `;
-                }).catch(err => {
-                    console.error('خطأ في التصدير:', err);
-                    loadingOverlay.classList.remove('active');
-                    exportBtn.disabled = false;
-                    alert('حدث خطأ أثناء التصدير. يرجى المحاولة مرة أخرى.');
-                });
-            });
+            try {
+                // انتظار تحميل الخطوط العربية
+                await waitForFonts();
+                
+                // انتظار تحميل MathJax
+                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                    await MathJax.typesetPromise();
+                }
+                
+                // انتظار إضافي لضمان اكتمال الرسم
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // إعدادات html2pdf محسّنة للعربية
+                const opt = {
+                    margin: [10, 10, 10, 10],
+                    filename: 'Math_Grade12_Mr_Mohamed_Hisham.pdf',
+                    image: { 
+                        type: 'jpeg', 
+                        quality: 0.98 
+                    },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        letterRendering: true,
+                        logging: false,
+                        // إعدادات مهمة للعربية
+                        scrollY: 0,
+                        scrollX: 0,
+                        windowWidth: element.scrollWidth,
+                        windowHeight: element.scrollHeight,
+                        backgroundColor: '#ffffff',
+                        // ضمان دعم RTL
+                        onclone: function(clonedDoc) {
+                            // التأكد من أن الاتجاه RTL في النسخة المستنسخة
+                            clonedDoc.documentElement.setAttribute('dir', 'rtl');
+                            clonedDoc.documentElement.setAttribute('lang', 'ar');
+                        }
+                    },
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait',
+                        compress: true
+                    },
+                    pagebreak: { 
+                        mode: ['avoid-all', 'css', 'legacy'],
+                        before: '.section',
+                        after: '.section'
+                    }
+                };
+                
+                // تنفيذ التصدير
+                await html2pdf().set(opt).from(element).save();
+                
+                // نجاح التصدير
+                showNotification('✅ تم تصدير الملف بنجاح!', 'success');
+                
+            } catch (err) {
+                console.error('خطأ في التصدير:', err);
+                showNotification('❌ حدث خطأ أثناء التصدير', 'error');
+            } finally {
+                // إخفاء مؤشر التحميل
+                loadingOverlay.classList.remove('active');
+                exportBtn.disabled = false;
+                exportBtnText.textContent = 'تصدير PDF';
+            }
         }
+        
+        // دالة عرض الإشعارات
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                font-family: 'Cairo', sans-serif;
+                font-weight: 600;
+                font-size: 1.1em;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // إضافة أنيميشن للإشعارات
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
