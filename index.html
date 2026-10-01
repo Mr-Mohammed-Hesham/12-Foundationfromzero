@@ -16,6 +16,9 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
+    <!-- مكتبة html2pdf لتصدير الملف إلى PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -46,6 +49,7 @@
             color: white;
             padding: 40px 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
@@ -57,6 +61,44 @@
         .header p {
             font-size: 1.2em;
             opacity: 0.9;
+        }
+        
+        /* زر تصدير PDF */
+        .export-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .export-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
+        }
+        
+        .export-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .export-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
         }
         
         /* شريط التنقل */
@@ -200,6 +242,29 @@
             color: #0c5460;
         }
         
+        /* صندوق الخطوات */
+        .steps {
+            background: #e8f5e9;
+            border-right: 5px solid #4caf50;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .steps::before {
+            content: "🔢 الخطوات: ";
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .steps ol {
+            margin: 10px 20px;
+        }
+        
+        .steps li {
+            margin-bottom: 8px;
+        }
+        
         /* القوائم */
         ul, ol {
             margin: 15px 30px;
@@ -233,25 +298,100 @@
             margin-top: 30px;
         }
         
+        /* مؤشر التحميل */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.3em;
+        }
+        
+        /* أنماط الطباعة */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .export-btn, .nav {
+                display: none !important;
+            }
+            .section {
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+            }
+        }
+        
         /* التجاوب */
         @media (max-width: 768px) {
             .header h1 { font-size: 1.8em; }
             .content { padding: 20px 15px; }
             .section { padding: 15px; }
             .nav { flex-direction: column; }
+            .export-btn {
+                position: static;
+                margin: 10px auto;
+                display: flex;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- مؤشر التحميل -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">جاري إنشاء ملف PDF...</div>
+    </div>
+    
+    <div class="container" id="content">
         <!-- الهيدر -->
         <div class="header">
+            <button class="export-btn" onclick="exportToPDF()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+                تصدير PDF
+            </button>
             <h1>📐 أساسيات الرياضيات</h1>
             <p>الصف الثاني عشر - شرح شامل ومبسط</p>
         </div>
         
         <!-- شريط التنقل -->
         <div class="nav">
+            <a href="#algebra">التعابير الجبرية</a>
             <a href="#numbers">مجموعات الأعداد</a>
             <a href="#signs">قوانين الإشارات</a>
             <a href="#identities">المتطابقات</a>
@@ -263,6 +403,193 @@
         
         <!-- المحتوى -->
         <div class="content">
+            
+            <!-- القسم الجديد: التعابير الجبرية -->
+            <div class="section" id="algebra">
+                <h2>🔤 التعابير الجبرية والعمليات عليها</h2>
+                <p>التعبير الجبري هو مجموعة من الأعداد والمتغيرات (الحروف) مرتبطة بعمليات الحساب (+, -, ×, ÷). وهو الأساس الذي تُبنى عليه كل فروع الرياضيات.</p>
+                
+                <h3>١. مكونات التعبير الجبري</h3>
+                <p>لنأخذ التعبير الجبري التالي كمثال:</p>
+                <div class="formula-box">
+                    $3x^2 - 5x + 7$
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>المكون</th>
+                        <th>الرمز</th>
+                        <th>الشرح</th>
+                        <th>مثال من التعبير</th>
+                    </tr>
+                    <tr>
+                        <td>المتغير (Variable)</td>
+                        <td>$x, y, a, b$</td>
+                        <td>حرف يمثل قيمة مجهولة أو قابلة للتغيير</td>
+                        <td>$x$</td>
+                    </tr>
+                    <tr>
+                        <td>المعامل (Coefficient)</td>
+                        <td>عدد ثابت</td>
+                        <td>العدد المضروب في المتغير</td>
+                        <td>$3$ في $3x^2$</td>
+                    </tr>
+                    <tr>
+                        <td>الثابت (Constant)</td>
+                        <td>عدد</td>
+                        <td>عدد لا يحتوي على متغير</td>
+                        <td>$7$</td>
+                    </tr>
+                    <tr>
+                        <td>الحد (Term)</td>
+                        <td>-</td>
+                        <td>كل جزء مفصول بإشارة + أو -</td>
+                        <td>$3x^2$ , $-5x$ , $7$</td>
+                    </tr>
+                    <tr>
+                        <td>الأس (Exponent)</td>
+                        <td>$n$</td>
+                        <td>عدد مرات ضرب المتغير في نفسه</td>
+                        <td>$2$ في $x^2$</td>
+                    </tr>
+                </table>
+                
+                <div class="note">
+                    الحد الذي لا يحتوي على متغير يسمى <strong>الحد الثابت</strong>، ودرجة كثيرة الحدود هي أكبر أس موجود فيها.
+                </div>
+                
+                <h3>٢. الحدود المتشابهة (Like Terms)</h3>
+                <p>الحدود المتشابهة هي الحدود التي تحتوي على <strong>نفس المتغيرات</strong> و<strong>نفس الأسس</strong>، وتختلف فقط في معاملاتها.</p>
+                
+                <div class="example">
+                    الحدود $3x^2$ و $-7x^2$ و $5x^2$ حدود متشابهة لأنها تحتوي على $x^2$.<br>
+                    أما $3x^2$ و $3x$ فليست متشابهة لأن الأسس مختلفة.
+                </div>
+                
+                <h3>٣. جمع وطرح التعابير الجبرية</h3>
+                <p>القاعدة الذهبية: <strong>نجمع أو نطرح الحدود المتشابهة فقط</strong></p>
+                
+                <div class="formula-box highlight">
+                    $ax^n + bx^n = (a+b)x^n$
+                </div>
+                
+                <div class="steps">
+                    <ol>
+                        <li>حدد الحدود المتشابهة في التعبير</li>
+                        <li>اجمع أو اطرح معاملات الحدود المتشابهة</li>
+                        <li>احتفظ بالمتغيرات والأسس كما هي</li>
+                    </ol>
+                </div>
+                
+                <div class="example">
+                    <strong>المثال:</strong> بسّط $(5x^2 + 3x - 4) + (2x^2 - 7x + 9)$
+                    <br><br>
+                    <strong>الحل:</strong><br>
+                    $= (5x^2 + 2x^2) + (3x - 7x) + (-4 + 9)$<br>
+                    $= 7x^2 - 4x + 5$
+                </div>
+                
+                <div class="example">
+                    <strong>المثال:</strong> بسّط $(8a^3 - 2a^2 + 5a) - (3a^3 + 4a^2 - a)$
+                    <br><br>
+                    <strong>الحل:</strong><br>
+                    $= 8a^3 - 2a^2 + 5a - 3a^3 - 4a^2 + a$<br>
+                    $= (8-3)a^3 + (-2-4)a^2 + (5+1)a$<br>
+                    $= 5a^3 - 6a^2 + 6a$
+                </div>
+                
+                <div class="note">
+                    عند الطرح، يجب توزيع إشارة السالب على <strong>جميع حدود</strong> القوس الثاني.
+                </div>
+                
+                <h3>٤. ضرب التعابير الجبرية</h3>
+                
+                <h4>أ) ضرب حد في حد (قوانين الأسس)</h4>
+                <div class="formula-box">
+                    $(ax^m)(bx^n) = (a \cdot b)x^{m+n}$
+                </div>
+                <p><strong>القاعدة:</strong> اضرب المعاملات، واجمع الأسس للمتغيرات المتشابهة.</p>
+                
+                <div class="example">
+                    $(3x^2)(4x^3) = (3 \times 4)x^{2+3} = 12x^5$
+                </div>
+                
+                <h4>ب) ضرب حد في كثير حدود (التوزيع)</h4>
+                <div class="formula-box">
+                    $a(b + c) = ab + ac$
+                </div>
+                
+                <div class="example">
+                    <strong>المثال:</strong> بسّط $3x(2x^2 - 5x + 4)$
+                    <br><br>
+                    <strong>الحل:</strong><br>
+                    $= (3x)(2x^2) + (3x)(-5x) + (3x)(4)$<br>
+                    $= 6x^3 - 15x^2 + 12x$
+                </div>
+                
+                <h4>ج) ضرب كثير حدود في كثير حدود</h4>
+                <div class="formula-box">
+                    $(a + b)(c + d) = ac + ad + bc + bd$
+                </div>
+                <p><strong>القاعدة:</strong> كل حد في القوس الأول يُضرب في كل حد في القوس الثاني.</p>
+                
+                <div class="example">
+                    <strong>المثال:</strong> بسّط $(2x + 3)(x - 5)$
+                    <br><br>
+                    <strong>الحل:</strong><br>
+                    $= (2x)(x) + (2x)(-5) + (3)(x) + (3)(-5)$<br>
+                    $= 2x^2 - 10x + 3x - 15$<br>
+                    $= 2x^2 - 7x - 15$
+                </div>
+                
+                <h3>٥. ملخص قوانين الأسس</h3>
+                <table>
+                    <tr>
+                        <th>القانون</th>
+                        <th>الصيغة</th>
+                        <th>مثال</th>
+                    </tr>
+                    <tr>
+                        <td>ضرب الأسس المتشابهة</td>
+                        <td>$x^m \cdot x^n = x^{m+n}$</td>
+                        <td>$x^2 \cdot x^3 = x^5$</td>
+                    </tr>
+                    <tr>
+                        <td>قسمة الأسس المتشابهة</td>
+                        <td>$\frac{x^m}{x^n} = x^{m-n}$</td>
+                        <td>$\frac{x^5}{x^2} = x^3$</td>
+                    </tr>
+                    <tr>
+                        <td>قوة الأس</td>
+                        <td>$(x^m)^n = x^{m \cdot n}$</td>
+                        <td>$(x^2)^3 = x^6$</td>
+                    </tr>
+                    <tr>
+                        <td>الأس صفر</td>
+                        <td>$x^0 = 1$</td>
+                        <td>$5^0 = 1$</td>
+                    </tr>
+                    <tr>
+                        <td>الأس السالب</td>
+                        <td>$x^{-n} = \frac{1}{x^n}$</td>
+                        <td>$x^{-2} = \frac{1}{x^2}$</td>
+                    </tr>
+                </table>
+                
+                <h3>٦. تمرين شامل</h3>
+                <div class="example">
+                    <strong>المسألة:</strong> بسّط التعبير التالي:<br>
+                    $2(3x^2 - 4x + 1) - (x^2 + 5x - 3) + x(2x - 1)$
+                    <br><br>
+                    <strong>الحل:</strong><br>
+                    <strong>الخطوة 1:</strong> فك الأقواس<br>
+                    $= 6x^2 - 8x + 2 - x^2 - 5x + 3 + 2x^2 - x$
+                    <br><br>
+                    <strong>الخطوة 2:</strong> جمع الحدود المتشابهة<br>
+                    $= (6 - 1 + 2)x^2 + (-8 - 5 - 1)x + (2 + 3)$<br>
+                    $= 7x^2 - 14x + 5$
+                </div>
+            </div>
             
             <!-- القسم 1: مجموعات الأعداد -->
             <div class="section" id="numbers">
@@ -404,24 +731,15 @@
                 
                 <div class="diagram">
                     <svg width="400" height="400" viewBox="0 0 400 400">
-                        <!-- المحاور -->
                         <line x1="50" y1="200" x2="350" y2="200" stroke="#333" stroke-width="2"/>
                         <line x1="200" y1="50" x2="200" y2="350" stroke="#333" stroke-width="2"/>
-                        
-                        <!-- الأسهم -->
                         <polygon points="350,200 340,195 340,205" fill="#333"/>
                         <polygon points="200,50 195,60 205,60" fill="#333"/>
-                        
-                        <!-- التسميات -->
                         <text x="360" y="205" fill="#333" font-size="18" font-weight="bold">x</text>
                         <text x="205" y="45" fill="#333" font-size="18" font-weight="bold">y</text>
                         <text x="205" y="215" fill="#333" font-size="14">O</text>
-                        
-                        <!-- نقطة -->
                         <circle cx="280" cy="130" r="5" fill="#e74c3c"/>
                         <text x="290" y="125" fill="#e74c3c" font-size="14" font-weight="bold">P(x, y)</text>
-                        
-                        <!-- خطوط منقطة -->
                         <line x1="280" y1="130" x2="280" y2="200" stroke="#e74c3c" stroke-width="1" stroke-dasharray="4"/>
                         <line x1="280" y1="130" x2="200" y2="130" stroke="#e74c3c" stroke-width="1" stroke-dasharray="4"/>
                     </svg>
@@ -452,7 +770,6 @@
                     <svg width="300" height="250" viewBox="0 0 300 250">
                         <polygon points="50,200 250,200 50,50" fill="none" stroke="#2a5298" stroke-width="2"/>
                         <rect x="50" y="190" width="10" height="10" fill="none" stroke="#2a5298" stroke-width="1"/>
-                        
                         <text x="140" y="220" fill="#2a5298" font-size="16" font-weight="bold">الضلع المجاور (adj)</text>
                         <text x="15" y="130" fill="#2a5298" font-size="16" font-weight="bold">المقابل</text>
                         <text x="15" y="150" fill="#2a5298" font-size="16" font-weight="bold">(opp)</text>
@@ -612,5 +929,58 @@
             <p style="margin-top: 10px; opacity: 0.8;">© 2026 - جميع الحقوق محفوظة</p>
         </div>
     </div>
+    
+    <!-- JavaScript لتصدير PDF -->
+    <script>
+        function exportToPDF() {
+            const element = document.getElementById('content');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const exportBtn = document.querySelector('.export-btn');
+            
+            // إظهار مؤشر التحميل وتعطيل الزر
+            loadingOverlay.classList.add('active');
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = '<span>جاري التصدير...</span>';
+            
+            // إعدادات html2pdf
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: 'Math_Grade12_Explanation.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    letterRendering: true,
+                    logging: false
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+            
+            // انتظار تحميل MathJax قبل التصدير
+            MathJax.typesetPromise().then(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // إخفاء مؤشر التحميل وإعادة تفعيل الزر
+                    loadingOverlay.classList.remove('active');
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        تصدير PDF
+                    `;
+                }).catch(err => {
+                    console.error('خطأ في التصدير:', err);
+                    loadingOverlay.classList.remove('active');
+                    exportBtn.disabled = false;
+                    alert('حدث خطأ أثناء التصدير. يرجى المحاولة مرة أخرى.');
+                });
+            });
+        }
+    </script>
 </body>
 </html>
